@@ -26,3 +26,36 @@ export const loans = {
   update: (id, data) => request(`/loans/${id}`, { method: "PUT", body: JSON.stringify(data) }),
   delete: (id) => request(`/loans/${id}`, { method: "DELETE" }),
 };
+
+export const maintenance = {
+  list: (params) => request(`/maintenance?${new URLSearchParams(params || {})}`),
+  get: (id) => request(`/maintenance/${id}`),
+  create: (data) => request("/maintenance", { method: "POST", body: JSON.stringify(data) }),
+  update: (id, data) => request(`/maintenance/${id}`, { method: "PUT", body: JSON.stringify(data) }),
+  delete: (id) => request(`/maintenance/${id}`, { method: "DELETE" }),
+};
+
+export const legal = {
+  list: (params) => request(`/legal?${new URLSearchParams(params || {})}`),
+  get: (id) => request(`/legal/${id}`),
+  create: (data) => request("/legal", { method: "POST", body: JSON.stringify(data) }),
+  update: (id, data) => request(`/legal/${id}`, { method: "PUT", body: JSON.stringify(data) }),
+  delete: (id) => request(`/legal/${id}`, { method: "DELETE" }),
+};
+
+export const expenses = {
+  list: (params) => request(`/expenses?${new URLSearchParams(params || {})}`),
+  get: (id) => request(`/expenses/${id}`),
+  create: (data) => request("/expenses", { method: "POST", body: JSON.stringify(data) }),
+  update: (id, data) => request(`/expenses/${id}`, { method: "PUT", body: JSON.stringify(data) }),
+  delete: (id) => request(`/expenses/${id}`, { method: "DELETE" }),
+};
+
+export const sales = {
+  list: (params) => request(`/sales?${new URLSearchParams(params || {})}`),
+  get: (id) => request(`/sales/${id}`),
+  create: (data) => request("/sales", { method: "POST", body: JSON.stringify(data) }),
+  update: (id, data) => request(`/sales/${id}`, { method: "PUT", body: JSON.stringify(data) }),
+  delete: (id) => request(`/sales/${id}`, { method: "DELETE" }),
+  addEvent: (data) => request("/sales/events", { method: "POST", body: JSON.stringify(data) }),
+};

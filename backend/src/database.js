@@ -55,6 +55,80 @@ db.exec(`
     created_at TEXT DEFAULT (datetime('now')),
     FOREIGN KEY (loan_id) REFERENCES loans(id) ON DELETE CASCADE
   );
+
+  CREATE TABLE IF NOT EXISTS maintenance_tasks (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    property_id INTEGER NOT NULL,
+    type TEXT NOT NULL CHECK(type IN ('painting','pruning','fencing','cleaning','repair','other')),
+    description TEXT,
+    frequency_days INTEGER,
+    last_done_date TEXT,
+    next_due_date TEXT,
+    status TEXT DEFAULT 'pending' CHECK(status IN ('pending','done','overdue')),
+    notes TEXT,
+    created_at TEXT DEFAULT (datetime('now')),
+    updated_at TEXT DEFAULT (datetime('now')),
+    FOREIGN KEY (property_id) REFERENCES properties(id) ON DELETE CASCADE
+  );
+
+  CREATE TABLE IF NOT EXISTS legal_documents (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    property_id INTEGER NOT NULL,
+    document_type TEXT NOT NULL CHECK(document_type IN ('deed','survey','tax_certificate','free_debt','title','other')),
+    name TEXT NOT NULL,
+    issue_date TEXT,
+    expiry_date TEXT,
+    status TEXT DEFAULT 'valid' CHECK(status IN ('valid','expiring_soon','expired','pending')),
+    notes TEXT,
+    created_at TEXT DEFAULT (datetime('now')),
+    updated_at TEXT DEFAULT (datetime('now')),
+    FOREIGN KEY (property_id) REFERENCES properties(id) ON DELETE CASCADE
+  );
+
+  CREATE TABLE IF NOT EXISTS expenses (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    property_id INTEGER NOT NULL,
+    category TEXT NOT NULL CHECK(category IN ('tax','service','insurance','maintenance','commission','other')),
+    name TEXT NOT NULL,
+    amount REAL NOT NULL,
+    frequency TEXT DEFAULT 'one_time' CHECK(frequency IN ('monthly','quarterly','yearly','one_time')),
+    due_date TEXT,
+    paid INTEGER DEFAULT 0,
+    paid_date TEXT,
+    notes TEXT,
+    created_at TEXT DEFAULT (datetime('now')),
+    updated_at TEXT DEFAULT (datetime('now')),
+    FOREIGN KEY (property_id) REFERENCES properties(id) ON DELETE CASCADE
+  );
+
+  CREATE TABLE IF NOT EXISTS sales (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    property_id INTEGER NOT NULL,
+    buyer_name TEXT,
+    buyer_contact TEXT,
+    sale_price REAL,
+    status TEXT DEFAULT 'interested' CHECK(status IN ('interested','visited','offered','reserved','signed','titled','closed')),
+    commission_amount REAL DEFAULT 0,
+    commission_percent REAL DEFAULT 0,
+    other_costs REAL DEFAULT 0,
+    net_profit REAL,
+    expected_close_date TEXT,
+    closed_date TEXT,
+    notes TEXT,
+    created_at TEXT DEFAULT (datetime('now')),
+    updated_at TEXT DEFAULT (datetime('now')),
+    FOREIGN KEY (property_id) REFERENCES properties(id) ON DELETE CASCADE
+  );
+
+  CREATE TABLE IF NOT EXISTS sale_events (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    sale_id INTEGER NOT NULL,
+    event_type TEXT NOT NULL,
+    description TEXT,
+    event_date TEXT DEFAULT (datetime('now')),
+    created_at TEXT DEFAULT (datetime('now')),
+    FOREIGN KEY (sale_id) REFERENCES sales(id) ON DELETE CASCADE
+  );
 `);
 
 export default db;
