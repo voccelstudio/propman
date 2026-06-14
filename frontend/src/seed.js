@@ -10,6 +10,8 @@ const data = {
   expenses: [],
   sales: [],
   sale_events: [],
+  valuations: [],
+  notes: [],
 };
 
 function id() { return data.idCounter++; }
@@ -64,4 +66,19 @@ export function seed() {
 
   localStorage.setItem(STORE_KEY, JSON.stringify(data));
   localStorage.setItem(SEEDED_KEY, "1");
+
+  const valuations = [
+    { id: id(), property_id: p1.id, value: 75000, date: "2025-01-15", notes: "Tasación inicial", created_at: now() },
+    { id: id(), property_id: p1.id, value: 82000, date: "2025-06-20", notes: "Revaluación por mejoras", created_at: now() },
+    { id: id(), property_id: p1.id, value: 88000, date: "2026-03-10", notes: "Tasación mercado actual", created_at: now() },
+    { id: id(), property_id: p2.id, value: 140000, date: "2024-10-01", notes: "Tasación compra", created_at: now() },
+  ];
+  data.valuations = valuations;
+
+  const notes = [
+    { id: id(), property_id: p1.id, text: "Hablar con el escribano para la subdivisión.", created_at: "2026-06-10 09:30:00" },
+    { id: id(), property_id: p1.id, text: "El cerco perimetral necesita reparación.", created_at: "2026-06-12 14:00:00" },
+    { id: id(), property_id: p2.id, text: "Contactar al agrimensor para actualizar el plano.", created_at: "2026-06-11 11:00:00" },
+  ];
+  data.notes = notes;
 }

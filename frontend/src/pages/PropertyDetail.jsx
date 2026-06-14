@@ -3,6 +3,39 @@ import { useParams, Link } from "react-router-dom";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import { properties as api, loans as loansApi, maintenance as maintApi, legal as legalApi, expenses as expApi, sales as salesApi } from "../api";
 
+function loadValuations(propertyId) {
+  try {
+    const store = JSON.parse(localStorage.getItem("propman_data") || "{}");
+    return (store.valuations || []).filter(v => v.property_id === Number(propertyId)).sort((a, b) => new Date(b.date) - new Date(a.date));
+  } catch { return []; }
+}
+
+function saveValuation(v) {
+  const store = JSON.parse(localStorage.getItem("propman_data") || "{}");
+  if (!store.valuations) store.valuations = [];
+  store.valuations.push({ id: Date.now(), ...v, created_at: new Date().toISOString().replace("T", " ").slice(0, 19) });
+  localStorage.setItem("propman_data", JSON.stringify(store));
+}
+
+function loadNotes(propertyId) {
+  try {
+    const store = JSON.parse(localStorage.getItem("propman_data") || "{}");
+    return (store.notes || []).filter(n => n.property_id === Number(propertyId)).sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+  } catch { return []; }
+}
+
+function saveNote(n) {
+  const store = JSON.parse(localStorage.getItem("propman_data") || "{}");
+  if (!store.notes) store.notes = [];
+  store.notes.push({ id: Date.now(), ...n, created_at: new Date().toISOString().replace("T", " ").slice(0, 19) });
+  localStorage.setItem("propman_data", JSON.stringify(store));
+}
+
+function generateDoc(title, property) {
+  const text = `${title}\n\nFecha: ${new Date().toLocaleDateString()}\n\nEntre las partes:\n\nVendedor: [Nombre del Vendedor]\nComprador: [Nombre del Comprador]\n\nPropiedad: ${property.name || "[Nombre de la Propiedad]"}\nDirección: ${property.address || "[Dirección]"}\nÁrea: ${property.area_sqm || "[---]"} m²\n\nDetalles:\n${property.description || "[Sin descripción]"}\n\nFirma: ________________________`;
+  navigator.clipboard.writeText(text).then(() => alert("Template copiado al portapapeles")).catch(() => alert("No se pudo copiar"));
+}
+
 const STATUS_MAP = { active: "Activo", for_sale: "En Venta", rented: "Alquilado", construction: "En Construcción", abandoned: "Abandonado" };
 const LEGAL_MAP = { ok: "OK", in_process: "En Proceso", pending: "Pendiente", observed: "Observado" };
 const LOAN_STATUS = { active: "Activo", paid: "Saldado", refinanced: "Refinanciado", defaulted: "En Mora" };
@@ -19,8 +52,16 @@ export default function PropertyDetail() {
   const [salesList, setSales] = useState([]);
   const [tab, setTab] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [valuations, setValuations] = useState([]);
+  const [showValuationForm, setShowValuationForm] = useState(false);
+  const [valForm, setValForm] = useState({ value: "", date: new Date().toISOString().split("T")[0], notes: "" });
+  const [collabNotes, setCollabNotes] = useState([]);
+  const [noteText, setNoteText] = useState("");
+  const [showTemplate, setShowTemplate] = useState(false);
 
   useEffect(() => {
+    setValuations(loadValuations(id));
+    setCollabNotes(loadNotes(id));
     Promise.all([
       api.get(id),
       loansApi.list(id),
@@ -139,6 +180,83 @@ export default function PropertyDetail() {
                 </div>
               )}
               {property.notes && <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700"><span className="text-sm text-gray-500 dark:text-gray-400">Notas:</span><p className="text-sm text-gray-900 dark:text-gray-100 mt-1 whitespace-pre-wrap">{property.notes}</p></div>}
+
+              <div className="mt-6 pt-4 border-t border-gray-100 dark:border-gray-700">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Historial de Tasaciones</h3>
+                  <button onClick={() => setShowValuationForm(!showValuationForm)}
+                    className="text-xs bg-blue-600 dark:bg-blue-500 text-white px-3 py-1 rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600">
+                    {showValuationForm ? "Cancelar" : "+ Agregar"}
+                  </button>
+                </div>
+
+                {showValuationForm && (
+                  <div className="mb-4 p-3 bg-gray-50 dark:bg-gray-900/30 rounded-lg flex gap-3 items-end">
+                    <div>
+                      <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">Valor ($)</label>
+                      <input type="number" value={valForm.value} onChange={e => setValForm({ ...valForm, value: e.target.value })}
+                        className="w-32 border border-gray-300 dark:border-gray-600 rounded px-2 py-1.5 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100" />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">Fecha</label>
+                      <input type="date" value={valForm.date} onChange={e => setValForm({ ...valForm, date: e.target.value })}
+                        className="border border-gray-300 dark:border-gray-600 rounded px-2 py-1.5 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100" />
+                    </div>
+                    <button onClick={() => {
+                      if (!valForm.value) return;
+                      saveValuation({ property_id: Number(id), value: Number(valForm.value), date: valForm.date, notes: valForm.notes });
+                      setValuations(loadValuations(id));
+                      setValForm({ value: "", date: new Date().toISOString().split("T")[0], notes: "" });
+                    }} className="bg-blue-600 dark:bg-blue-500 text-white px-3 py-1.5 rounded-lg text-sm hover:bg-blue-700 dark:hover:bg-blue-600">Guardar</button>
+                  </div>
+                )}
+
+                {valuations.length > 0 ? (
+                  <div>
+                    <div className="flex items-end gap-1 h-20 mb-3">
+                      {(() => {
+                        const max = Math.max(...valuations.map(v => v.value));
+                        return valuations.slice(0).reverse().map((v, i) => (
+                          <div key={v.id} className="flex-1 flex flex-col items-center justify-end" title={`$${v.value.toLocaleString()} (${v.date})`}>
+                            <div className="w-full bg-blue-400 dark:bg-blue-500 rounded-t" style={{ height: `${(v.value / max) * 100}%`, minHeight: "4px" }}></div>
+                          </div>
+                        ));
+                      })()}
+                    </div>
+                    {valuations.map(v => (
+                      <div key={v.id} className="flex items-center justify-between py-2 border-b border-gray-100 dark:border-gray-700 last:border-0 text-sm">
+                        <span className="text-gray-500 dark:text-gray-400">{v.date}</span>
+                        <span className="font-medium text-gray-900 dark:text-gray-100">${v.value.toLocaleString()}</span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Sin tasaciones registradas</p>
+                )}
+              </div>
+
+              <div className="mt-6 pt-4 border-t border-gray-100 dark:border-gray-700">
+                <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">Notas Colaborativas</h3>
+                <div className="flex gap-2 mb-3">
+                  <input type="text" value={noteText} onChange={e => setNoteText(e.target.value)} placeholder="Agregar nota..."
+                    className="flex-1 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400"
+                    onKeyDown={e => { if (e.key === "Enter" && noteText.trim()) { saveNote({ property_id: Number(id), text: noteText.trim() }); setCollabNotes(loadNotes(id)); setNoteText(""); } }} />
+                  <button onClick={() => { if (noteText.trim()) { saveNote({ property_id: Number(id), text: noteText.trim() }); setCollabNotes(loadNotes(id)); setNoteText(""); } }}
+                    className="bg-blue-600 dark:bg-blue-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 dark:hover:bg-blue-600">Enviar</button>
+                </div>
+                {collabNotes.length > 0 ? (
+                  <div className="space-y-2 max-h-48 overflow-y-auto">
+                    {collabNotes.map(n => (
+                      <div key={n.id} className="p-3 bg-gray-50 dark:bg-gray-900/30 rounded-lg text-sm">
+                        <p className="text-gray-900 dark:text-gray-100">{n.text}</p>
+                        <p className="text-xs text-gray-400 mt-1">{n.created_at ? new Date(n.created_at).toLocaleString() : ""}</p>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Sin notas aún</p>
+                )}
+              </div>
             </div>
           )}
 
@@ -201,7 +319,10 @@ export default function PropertyDetail() {
             <div>
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-semibold">Documentos Legales</h2>
-                <Link to={`/properties/${id}/legal/new`} className="bg-blue-600 dark:bg-blue-500 text-white px-4 py-1.5 rounded-lg text-sm hover:bg-blue-700 dark:hover:bg-blue-600">+ Nuevo</Link>
+                <div className="flex gap-2">
+                  <button onClick={() => setShowTemplate(true)} className="text-sm border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 px-3 py-1.5 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800">{`<>`} Template</button>
+                  <Link to={`/properties/${id}/legal/new`} className="bg-blue-600 dark:bg-blue-500 text-white px-4 py-1.5 rounded-lg text-sm hover:bg-blue-700 dark:hover:bg-blue-600">+ Nuevo</Link>
+                </div>
               </div>
               {docs.length === 0 ? <p className="text-sm text-gray-500 dark:text-gray-400 py-4 text-center">Sin documentos</p> : (
                 <div className="space-y-3">
@@ -303,6 +424,29 @@ export default function PropertyDetail() {
           )}
         </div>
       </div>
+
+      {showTemplate && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={() => setShowTemplate(false)}>
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 p-6 w-full max-w-lg mx-4 max-h-[80vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Templates de Documentos</h2>
+              <button onClick={() => setShowTemplate(false)} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-xl leading-none">&times;</button>
+            </div>
+            <div className="space-y-3">
+              {[
+                { name: "Carta de Intención de Compra", doc: () => generateDoc("CARTA DE INTENCIÓN DE COMPRA", property) },
+                { name: "Contrato de Reserva", doc: () => generateDoc("CONTRATO DE RESERVA", property) },
+                { name: "Recibo de Señal", doc: () => generateDoc("RECIBO DE SEÑAL", property) },
+              ].map(t => (
+                <div key={t.name} className="p-4 rounded-lg border border-gray-200 dark:border-gray-700">
+                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">{t.name}</p>
+                  <button onClick={() => { t.doc(); setShowTemplate(false); }} className="text-sm bg-blue-600 dark:bg-blue-500 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600">Generar</button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
