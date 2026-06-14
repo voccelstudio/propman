@@ -142,7 +142,10 @@ export default function PropertyDetail() {
                         {l.term_months && <span>{l.term_months} meses</span>}
                         {l.remaining_balance != null && <span>Saldo: ${Number(l.remaining_balance).toLocaleString()}</span>}
                       </div>
-                      <Link to={`/loans/${l.id}/edit`} className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 mt-2 inline-block">Editar</Link>
+                      <div className="flex gap-3 mt-2">
+                        <Link to={`/loans/${l.id}`} className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">Ver amortización</Link>
+                        <Link to={`/loans/${l.id}/edit`} className="text-xs text-gray-600 dark:text-gray-400 hover:text-gray-800">Editar</Link>
+                      </div>
                     </div>
                   ))}
                 </div>

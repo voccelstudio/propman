@@ -20,6 +20,9 @@ const LEGAL_MAP = {
 export default function Properties() {
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+  const [filterStatus, setFilterStatus] = useState("");
+  const [filterType, setFilterType] = useState("");
 
   useEffect(() => {
     api.list().then(setList).finally(() => setLoading(false));
@@ -30,6 +33,13 @@ export default function Properties() {
     await api.delete(id);
     setList((prev) => prev.filter((p) => p.id !== id));
   };
+
+  const filtered = list.filter(p => {
+    if (search && !p.name.toLowerCase().includes(search.toLowerCase())) return false;
+    if (filterStatus && p.general_status !== filterStatus) return false;
+    if (filterType && p.type !== filterType) return false;
+    return true;
+  });
 
   if (loading) return <div className="p-8 text-gray-500 dark:text-gray-400">Cargando...</div>;
 
@@ -45,14 +55,38 @@ export default function Properties() {
         </Link>
       </div>
 
-      {list.length === 0 ? (
+      <div className="flex flex-wrap gap-3 mb-6">
+        <input type="text" placeholder="Buscar por nombre..." value={search} onChange={e => setSearch(e.target.value)}
+          className="border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm w-64 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400" />
+        <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)}
+          className="border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
+          <option value="">Todos los estados</option>
+          <option value="active">Activo</option>
+          <option value="for_sale">En Venta</option>
+          <option value="rented">Alquilado</option>
+          <option value="construction">En Construcción</option>
+          <option value="abandoned">Abandonado</option>
+        </select>
+        <select value={filterType} onChange={e => setFilterType(e.target.value)}
+          className="border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
+          <option value="">Todos los tipos</option>
+          <option value="urban">Urbano</option>
+          <option value="rural">Rural</option>
+        </select>
+        {(search || filterStatus || filterType) && (
+          <button onClick={() => { setSearch(""); setFilterStatus(""); setFilterType(""); }}
+            className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 px-3 py-2">Limpiar</button>
+        )}
+      </div>
+
+      {filtered.length === 0 ? (
         <div className="text-center py-16 text-gray-500 dark:text-gray-400">
-          <p className="text-lg mb-2">No hay propiedades registradas</p>
-          <p className="text-sm">Crea la primera para empezar</p>
+          <p className="text-lg mb-2">{list.length === 0 ? "No hay propiedades registradas" : "Sin resultados"}</p>
+          <p className="text-sm">{list.length === 0 ? "Crea la primera para empezar" : "Probá con otros filtros"}</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {list.map((p) => (
+          {filtered.map((p) => (
             <div key={p.id} className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
               {(p.photo || (p.latitude && p.longitude)) && (
                 <div className="h-36 bg-gray-100 overflow-hidden">
