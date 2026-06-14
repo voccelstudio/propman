@@ -74,6 +74,20 @@ export default function PropertyDetail() {
         </div>
       </div>
 
+      {(overdueTasks.length > 0 || expiringDocs.length > 0 || pendingExpenses.length > 0) && (
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-orange-200 dark:border-orange-900/50 p-4 mb-6">
+          <div className="flex items-center gap-2 text-orange-600 dark:text-orange-400 mb-2">
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" /></svg>
+            <span className="text-sm font-medium">Atención requerida</span>
+          </div>
+          <div className="flex flex-wrap gap-3 text-sm">
+            {pendingExpenses.length > 0 && <span className="text-gray-700 dark:text-gray-300"><strong>{pendingExpenses.length}</strong> gastos impagos</span>}
+            {overdueTasks.length > 0 && <span className="text-gray-700 dark:text-gray-300"><strong>{overdueTasks.length}</strong> mantenimientos vencidos</span>}
+            {expiringDocs.length > 0 && <span className="text-gray-700 dark:text-gray-300"><strong>{expiringDocs.length}</strong> documentos por vencer</span>}
+          </div>
+        </div>
+      )}
+
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 mb-6">
         <div className="flex border-b border-gray-200 dark:border-gray-700 overflow-x-auto">
           {TABS.map((t, i) => (
@@ -92,9 +106,14 @@ export default function PropertyDetail() {
                 <Link to={`/properties/${id}/edit`} className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 border border-blue-200 dark:border-blue-800 px-3 py-1.5 rounded-lg">Editar</Link>
               </div>
 
-              {property.photo && (
-                <div className="mb-4 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
-                  <img src={property.photo} alt={property.name} className="w-full h-64 object-cover" />
+              {((property.photos && property.photos.length > 0) || property.photo) && (
+                <div className="mb-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                  {(property.photos && property.photos.length > 0 ? property.photos : [property.photo]).filter(Boolean).map((photo, i) => (
+                    <div key={i} className="rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
+                      <img src={photo} alt={property.name} className="w-full h-48 object-cover cursor-pointer hover:opacity-90 transition-opacity"
+                        onClick={() => window.open(photo, "_blank")} />
+                    </div>
+                  ))}
                 </div>
               )}
 
@@ -206,6 +225,39 @@ export default function PropertyDetail() {
                 <h2 className="text-lg font-semibold">Gastos</h2>
                 <Link to={`/properties/${id}/expenses/new`} className="bg-blue-600 dark:bg-blue-500 text-white px-4 py-1.5 rounded-lg text-sm hover:bg-blue-700 dark:hover:bg-blue-600">+ Nuevo</Link>
               </div>
+
+              {expensesList.length > 0 && (
+                <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-900/30 rounded-lg">
+                  <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Resumen por categoría</p>
+                  <div className="space-y-2">
+                    {Object.entries(
+                      expensesList.reduce((acc, e) => {
+                        acc[e.category] = (acc[e.category] || 0) + Number(e.amount);
+                        return acc;
+                      }, {})
+                    ).map(([cat, total]) => {
+                      const maxTotal = Math.max(...Object.values(
+                        expensesList.reduce((acc, e) => {
+                          acc[e.category] = (acc[e.category] || 0) + Number(e.amount);
+                          return acc;
+                        }, {})
+                      ));
+                      const pct = (total / maxTotal) * 100;
+                      const colors = { tax: "bg-red-400", insurance: "bg-blue-400", service: "bg-green-400", maintenance: "bg-yellow-400", other: "bg-gray-400" };
+                      return (
+                        <div key={cat} className="flex items-center gap-3 text-sm">
+                          <span className="w-24 capitalize text-gray-600 dark:text-gray-400">{cat === "tax" ? "Impuestos" : cat === "insurance" ? "Seguros" : cat === "service" ? "Servicios" : cat === "maintenance" ? "Mantenimiento" : "Otros"}</span>
+                          <div className="flex-1 h-5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                            <div className={`h-full ${colors[cat] || "bg-gray-400"} rounded-full transition-all`} style={{ width: `${pct}%` }}></div>
+                          </div>
+                          <span className="w-24 text-right font-medium text-gray-900 dark:text-gray-100">${total.toLocaleString()}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
               {expensesList.length === 0 ? <p className="text-sm text-gray-500 dark:text-gray-400 py-4 text-center">Sin gastos registrados</p> : (
                 <div className="space-y-3">
                   {expensesList.map((e) => (

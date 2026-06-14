@@ -1,0 +1,13 @@
+{
+  "name": "PropMan - Gestión de Propiedades",
+  "short_name": "PropMan",
+  "description": "Gestión de propiedades, préstamos, gastos y más",
+  "start_url": "/propman/",
+  "display": "standalone",
+  "background_color": "#f9fafb",
+  "theme_color": "#2563eb",
+  "icons": [
+    { "src": "/propman/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/propman/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

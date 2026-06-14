@@ -41,6 +41,18 @@ export default function PropertyForm() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  const addPhotos = (files) => {
+    Array.from(files).forEach(file => {
+      const reader = new FileReader();
+      reader.onload = (ev) => setForm(prev => ({ ...prev, photos: [...prev.photos, ev.target.result] }));
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const removePhoto = (idx) => {
+    setForm(prev => ({ ...prev, photos: prev.photos.filter((_, i) => i !== idx) }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const payload = {
@@ -50,6 +62,7 @@ export default function PropertyForm() {
       area_sqm: form.area_sqm ? Number(form.area_sqm) : null,
       purchase_price: form.purchase_price ? Number(form.purchase_price) : 0,
     };
+    if (!payload.photos) payload.photos = [];
 
     if (isEdit) {
       await api.update(id, payload);
@@ -153,20 +166,18 @@ export default function PropertyForm() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Foto del Terreno</label>
-          <div className="flex items-center gap-3">
-            <input type="file" accept="image/*" onChange={(e) => {
-              const file = e.target.files[0];
-              if (!file) return;
-              const reader = new FileReader();
-              reader.onload = (ev) => setForm({ ...form, photo: ev.target.result });
-              reader.readAsDataURL(file);
-            }} className="text-sm text-gray-600 dark:text-gray-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border file:border-gray-300 dark:file:border-gray-600 dark:border-gray-600 file:text-sm dark:file:text-gray-300 file:bg-gray-50 dark:file:bg-gray-700 dark:bg-gray-800 hover:file:bg-gray-100 dark:hover:file:bg-gray-600" />
-            {form.photo && <button type="button" onClick={() => setForm({ ...form, photo: "" })} className="text-xs text-red-600 dark:text-red-400 hover:text-red-800">Eliminar</button>}
-          </div>
-          {form.photo && (
-            <div className="mt-2">
-              <img src={form.photo} alt="Preview" className="h-32 w-full object-cover rounded-lg border border-gray-200 dark:border-gray-700" />
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Fotos del Terreno</label>
+          <input type="file" accept="image/*" multiple onChange={(e) => { addPhotos(e.target.files); e.target.value = ""; }}
+            className="w-full text-sm text-gray-600 dark:text-gray-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border file:border-gray-300 dark:file:border-gray-600 file:text-sm dark:file:text-gray-300 file:bg-gray-50 dark:file:bg-gray-700 dark:bg-gray-800 hover:file:bg-gray-100 dark:hover:file:bg-gray-600" />
+          {(form.photos || []).length > 0 && (
+            <div className="mt-2 grid grid-cols-3 gap-2">
+              {form.photos.map((photo, i) => (
+                <div key={i} className="relative group">
+                  <img src={photo} alt="" className="h-24 w-full object-cover rounded-lg border border-gray-200 dark:border-gray-700" />
+                  <button type="button" onClick={() => removePhoto(i)}
+                    className="absolute top-1 right-1 w-5 h-5 bg-red-600 text-white rounded-full text-xs leading-none opacity-0 group-hover:opacity-100 transition-opacity">&times;</button>
+                </div>
+              ))}
             </div>
           )}
         </div>

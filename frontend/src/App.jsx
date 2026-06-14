@@ -3,6 +3,7 @@ import { Routes, Route, Link } from "react-router-dom";
 import { useTheme } from "./ThemeContext.jsx";
 import BackupRestore from "./BackupRestore.jsx";
 import Dashboard from "./pages/Dashboard";
+import MapView from "./pages/MapView";
 import Properties from "./pages/Properties";
 import PropertyForm from "./pages/PropertyForm";
 import PropertyDetail from "./pages/PropertyDetail";
@@ -27,6 +28,7 @@ function App() {
             <nav className="flex gap-4 text-sm">
               <Link to="/" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">Dashboard</Link>
               <Link to="/properties" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">Propiedades</Link>
+              <Link to="/map" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">Mapa</Link>
               <button onClick={() => setShowBackup(true)} className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">Datos</button>
             </nav>
             <button onClick={toggle} className="p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" title={dark ? "Modo claro" : "Modo oscuro"}>
@@ -42,6 +44,7 @@ function App() {
 
       <Routes>
         <Route path="/" element={<Dashboard />} />
+        <Route path="/map" element={<MapView />} />
         <Route path="/properties" element={<Properties />} />
         <Route path="/properties/new" element={<PropertyForm />} />
         <Route path="/properties/:id" element={<PropertyDetail />} />

@@ -88,9 +88,11 @@ export default function Properties() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filtered.map((p) => (
             <div key={p.id} className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-              {(p.photo || (p.latitude && p.longitude)) && (
+              {((p.photos && p.photos.length > 0) || p.photo || (p.latitude && p.longitude)) && (
                 <div className="h-36 bg-gray-100 overflow-hidden">
-                  {p.photo ? (
+                  {p.photos && p.photos.length > 0 ? (
+                    <img src={p.photos[0]} alt={p.name} className="w-full h-full object-cover" />
+                  ) : p.photo ? (
                     <img src={p.photo} alt={p.name} className="w-full h-full object-cover" />
                   ) : (
                     <img src={`https://staticmap.openstreetmap.de/staticmap.php?center=${p.latitude},${p.longitude}&zoom=14&size=400x200&markers=${p.latitude},${p.longitude}`}
