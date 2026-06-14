@@ -22,6 +22,7 @@ db.exec(`
     purchase_date TEXT,
     legal_status TEXT DEFAULT 'pending' CHECK(legal_status IN ('ok','in_process','pending','observed')),
     general_status TEXT DEFAULT 'active' CHECK(general_status IN ('active','for_sale','rented','construction','abandoned')),
+    photo TEXT,
     notes TEXT,
     created_at TEXT DEFAULT (datetime('now')),
     updated_at TEXT DEFAULT (datetime('now'))

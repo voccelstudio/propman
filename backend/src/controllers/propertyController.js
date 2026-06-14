@@ -16,18 +16,18 @@ export function createProperty(req, res) {
   const {
     name, description, address, latitude, longitude,
     area_sqm, type, purchase_price, purchase_date,
-    legal_status, general_status, notes,
+    legal_status, general_status, notes, photo,
   } = req.body;
 
   if (!name) return res.status(400).json({ error: "Name is required" });
 
   const result = db.prepare(`
-    INSERT INTO properties (name, description, address, latitude, longitude, area_sqm, type, purchase_price, purchase_date, legal_status, general_status, notes)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO properties (name, description, address, latitude, longitude, area_sqm, type, purchase_price, purchase_date, legal_status, general_status, notes, photo)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `).run(
     name, description || null, address || null, latitude || null, longitude || null,
     area_sqm || null, type || "urban", purchase_price || 0, purchase_date || null,
-    legal_status || "pending", general_status || "active", notes || null,
+    legal_status || "pending", general_status || "active", notes || null, photo || null,
   );
 
   const property = db.prepare("SELECT * FROM properties WHERE id = ?").get(result.lastInsertRowid);
@@ -42,7 +42,7 @@ export function updateProperty(req, res) {
   const fields = [
     "name", "description", "address", "latitude", "longitude",
     "area_sqm", "type", "purchase_price", "purchase_date",
-    "legal_status", "general_status", "notes",
+    "legal_status", "general_status", "notes", "photo",
   ];
 
   const updates = fields.filter((f) => req.body[f] !== undefined);

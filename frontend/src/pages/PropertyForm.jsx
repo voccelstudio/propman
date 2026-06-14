@@ -5,7 +5,7 @@ import { properties as api } from "../api";
 const INITIAL = {
   name: "", description: "", address: "", latitude: "", longitude: "",
   area_sqm: "", type: "urban", purchase_price: "", purchase_date: "",
-  legal_status: "pending", general_status: "active", notes: "",
+  legal_status: "pending", general_status: "active", notes: "", photo: "",
 };
 
 export default function PropertyForm() {
@@ -31,6 +31,7 @@ export default function PropertyForm() {
           legal_status: p.legal_status || "pending",
           general_status: p.general_status || "active",
           notes: p.notes || "",
+          photo: p.photo || "",
         });
       }).finally(() => setLoading(false));
     }
@@ -149,6 +150,25 @@ export default function PropertyForm() {
               <option value="observed">Observado</option>
             </select>
           </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Foto del Terreno</label>
+          <div className="flex items-center gap-3">
+            <input type="file" accept="image/*" onChange={(e) => {
+              const file = e.target.files[0];
+              if (!file) return;
+              const reader = new FileReader();
+              reader.onload = (ev) => setForm({ ...form, photo: ev.target.result });
+              reader.readAsDataURL(file);
+            }} className="text-sm text-gray-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border file:border-gray-300 file:text-sm file:bg-gray-50 hover:file:bg-gray-100" />
+            {form.photo && <button type="button" onClick={() => setForm({ ...form, photo: "" })} className="text-xs text-red-600 hover:text-red-800">Eliminar</button>}
+          </div>
+          {form.photo && (
+            <div className="mt-2">
+              <img src={form.photo} alt="Preview" className="h-32 w-full object-cover rounded-lg border border-gray-200" />
+            </div>
+          )}
         </div>
 
         <div>

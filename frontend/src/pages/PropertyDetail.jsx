@@ -91,6 +91,13 @@ export default function PropertyDetail() {
                 </div>
                 <Link to={`/properties/${id}/edit`} className="text-sm text-blue-600 hover:text-blue-800 border border-blue-200 px-3 py-1.5 rounded-lg">Editar</Link>
               </div>
+
+              {property.photo && (
+                <div className="mb-4 rounded-lg overflow-hidden border border-gray-200">
+                  <img src={property.photo} alt={property.name} className="w-full h-64 object-cover" />
+                </div>
+              )}
+
               <div className="grid grid-cols-2 gap-4 text-sm">
                 {property.description && <div className="col-span-2"><span className="text-gray-500">Descripción:</span><p className="text-gray-900 mt-1">{property.description}</p></div>}
                 {property.address && <div><span className="text-gray-500">Dirección:</span><p className="text-gray-900">{property.address}</p></div>}
