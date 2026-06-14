@@ -1,4 +1,4 @@
-const API = "http://localhost:3001/api";
+const API = "/api";
 
 async function request(path, options = {}) {
   const res = await fetch(`${API}${path}`, {

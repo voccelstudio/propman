@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: propman
+    env: node
+    buildCommand: npm install && npm run build
+    startCommand: node backend/src/index.js
+    envVars:
+      - key: NODE_VERSION
+        value: 22
+      - key: PORT
+        value: 10000

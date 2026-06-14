@@ -6,10 +6,15 @@
     "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
     "dev:frontend": "npm --prefix frontend run dev",
     "dev:backend": "npm --prefix backend run dev",
-    "build": "npm --prefix frontend run build",
-    "start": "npm --prefix backend run start"
+    "build": "npm --prefix frontend install && npm --prefix frontend run build",
+    "start": "npm run build && node backend/src/index.js"
   },
   "devDependencies": {
     "concurrently": "^9.1.0"
+  },
+  "dependencies": {
+    "better-sqlite3": "^12.10.1",
+    "cors": "^2.8.5",
+    "express": "^4.21.0"
   }
 }
