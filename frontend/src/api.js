@@ -1,6 +1,6 @@
 const API = "/api";
 
-async function request(path, options = {}) {
+async function serverRequest(path, options = {}) {
   const res = await fetch(`${API}${path}`, {
     headers: { "Content-Type": "application/json", ...options.headers },
     ...options,
@@ -11,51 +11,66 @@ async function request(path, options = {}) {
   return data;
 }
 
-export const properties = {
-  list: () => request("/properties"),
-  get: (id) => request(`/properties/${id}`),
-  create: (data) => request("/properties", { method: "POST", body: JSON.stringify(data) }),
-  update: (id, data) => request(`/properties/${id}`, { method: "PUT", body: JSON.stringify(data) }),
-  delete: (id) => request(`/properties/${id}`, { method: "DELETE" }),
-};
+function makeApi(table, localTable) {
+  const lt = localTable || table;
+  return {
+    list: async (params) => {
+      try {
+        const qs = params ? "?" + new URLSearchParams(params) : "";
+        return await serverRequest(`/${table}${qs}`);
+      } catch {
+        const { localStore } = await import("./store.js");
+        return localStore.filter(lt, params || {});
+      }
+    },
+    get: async (id) => {
+      try {
+        return await serverRequest(`/${table}/${id}`);
+      } catch {
+        const { localStore } = await import("./store.js");
+        return localStore.get(lt, id);
+      }
+    },
+    create: async (data) => {
+      try {
+        return await serverRequest(`/${table}`, { method: "POST", body: JSON.stringify(data) });
+      } catch {
+        const { localStore } = await import("./store.js");
+        return localStore.create(lt, data);
+      }
+    },
+    update: async (id, data) => {
+      try {
+        return await serverRequest(`/${table}/${id}`, { method: "PUT", body: JSON.stringify(data) });
+      } catch {
+        const { localStore } = await import("./store.js");
+        return localStore.update(lt, id, data);
+      }
+    },
+    delete: async (id) => {
+      try {
+        return await serverRequest(`/${table}/${id}`, { method: "DELETE" });
+      } catch {
+        const { localStore } = await import("./store.js");
+        return localStore.delete(lt, id);
+      }
+    },
+  };
+}
 
-export const loans = {
-  list: (property_id) => request(`/loans${property_id ? `?property_id=${property_id}` : ""}`),
-  get: (id) => request(`/loans/${id}`),
-  create: (data) => request("/loans", { method: "POST", body: JSON.stringify(data) }),
-  update: (id, data) => request(`/loans/${id}`, { method: "PUT", body: JSON.stringify(data) }),
-  delete: (id) => request(`/loans/${id}`, { method: "DELETE" }),
-};
-
-export const maintenance = {
-  list: (params) => request(`/maintenance?${new URLSearchParams(params || {})}`),
-  get: (id) => request(`/maintenance/${id}`),
-  create: (data) => request("/maintenance", { method: "POST", body: JSON.stringify(data) }),
-  update: (id, data) => request(`/maintenance/${id}`, { method: "PUT", body: JSON.stringify(data) }),
-  delete: (id) => request(`/maintenance/${id}`, { method: "DELETE" }),
-};
-
-export const legal = {
-  list: (params) => request(`/legal?${new URLSearchParams(params || {})}`),
-  get: (id) => request(`/legal/${id}`),
-  create: (data) => request("/legal", { method: "POST", body: JSON.stringify(data) }),
-  update: (id, data) => request(`/legal/${id}`, { method: "PUT", body: JSON.stringify(data) }),
-  delete: (id) => request(`/legal/${id}`, { method: "DELETE" }),
-};
-
-export const expenses = {
-  list: (params) => request(`/expenses?${new URLSearchParams(params || {})}`),
-  get: (id) => request(`/expenses/${id}`),
-  create: (data) => request("/expenses", { method: "POST", body: JSON.stringify(data) }),
-  update: (id, data) => request(`/expenses/${id}`, { method: "PUT", body: JSON.stringify(data) }),
-  delete: (id) => request(`/expenses/${id}`, { method: "DELETE" }),
-};
-
+export const properties = makeApi("properties");
+export const loans = makeApi("loans");
+export const maintenance = makeApi("maintenance", "maintenance_tasks");
+export const legal = makeApi("legal", "legal_documents");
+export const expenses = makeApi("expenses");
 export const sales = {
-  list: (params) => request(`/sales?${new URLSearchParams(params || {})}`),
-  get: (id) => request(`/sales/${id}`),
-  create: (data) => request("/sales", { method: "POST", body: JSON.stringify(data) }),
-  update: (id, data) => request(`/sales/${id}`, { method: "PUT", body: JSON.stringify(data) }),
-  delete: (id) => request(`/sales/${id}`, { method: "DELETE" }),
-  addEvent: (data) => request("/sales/events", { method: "POST", body: JSON.stringify(data) }),
+  ...makeApi("sales"),
+  addEvent: async (data) => {
+    try {
+      return await serverRequest("/sales/events", { method: "POST", body: JSON.stringify(data) });
+    } catch {
+      const { localStore } = await import("./store.js");
+      return localStore.create("sale_events", data);
+    }
+  },
 };
