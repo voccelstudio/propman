@@ -59,43 +59,43 @@ export default function LoanForm() {
     navigate(`/properties/${form.property_id}`);
   };
 
-  if (loading) return <div className="p-8 text-gray-500">Cargando...</div>;
+  if (loading) return <div className="p-8 text-gray-500 dark:text-gray-400">Cargando...</div>;
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">
         {isEdit ? "Editar Préstamo" : "Nuevo Préstamo"}
       </h1>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Entidad *</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Entidad *</label>
             <input name="lender" value={form.lender} onChange={handleChange} required
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" />
+              className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Monto Total *</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Monto Total *</label>
             <input name="total_amount" type="number" value={form.total_amount} onChange={handleChange} required
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" />
+              className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm" />
           </div>
         </div>
 
         <div className="grid grid-cols-3 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Tasa de Interés (%)</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tasa de Interés (%)</label>
             <input name="interest_rate" type="number" step="0.01" value={form.interest_rate} onChange={handleChange}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" />
+              className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Plazo (meses)</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Plazo (meses)</label>
             <input name="term_months" type="number" value={form.term_months} onChange={handleChange}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" />
+              className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Tipo de Amortización</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tipo de Amortización</label>
             <select name="payment_type" value={form.payment_type} onChange={handleChange}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+              className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm">
               <option value="french">Francés</option>
               <option value="german">Alemán</option>
               <option value="american">Americano</option>
@@ -105,30 +105,30 @@ export default function LoanForm() {
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Fecha de Inicio</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Fecha de Inicio</label>
             <input name="start_date" type="date" value={form.start_date} onChange={handleChange}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" />
+              className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Saldo Restante</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Saldo Restante</label>
             <input name="remaining_balance" type="number" value={form.remaining_balance} onChange={handleChange}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" />
+              className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm" />
           </div>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Notas</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Notas</label>
           <textarea name="notes" value={form.notes} onChange={handleChange} rows={3}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" />
+            className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm" />
         </div>
 
         <div className="flex gap-3 pt-4">
           <button type="submit"
-            className="bg-blue-600 text-white px-6 py-2 rounded-lg text-sm hover:bg-blue-700">
+            className="bg-blue-600 dark:bg-blue-500 text-white px-6 py-2 rounded-lg text-sm hover:bg-blue-700 dark:hover:bg-blue-600">
             {isEdit ? "Guardar Cambios" : "Crear Préstamo"}
           </button>
           <button type="button" onClick={() => navigate(`/properties/${form.property_id}`)}
-            className="text-gray-600 px-6 py-2 rounded-lg text-sm border border-gray-300 hover:bg-gray-50">
+            className="text-gray-600 dark:text-gray-400 px-6 py-2 rounded-lg text-sm border border-gray-300 dark:border-gray-600 dark:border-gray-600 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800">
             Cancelar
           </button>
         </div>
@@ -136,3 +136,5 @@ export default function LoanForm() {
     </div>
   );
 }
+
+

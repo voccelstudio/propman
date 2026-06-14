@@ -59,56 +59,56 @@ export default function PropertyForm() {
     navigate("/properties");
   };
 
-  if (loading) return <div className="p-8 text-gray-500">Cargando...</div>;
+  if (loading) return <div className="p-8 text-gray-500 dark:text-gray-400">Cargando...</div>;
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">
         {isEdit ? "Editar Propiedad" : "Nueva Propiedad"}
       </h1>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Nombre *</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nombre *</label>
           <input name="name" value={form.name} onChange={handleChange} required
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" />
+            className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm" />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Descripción</label>
           <textarea name="description" value={form.description} onChange={handleChange} rows={3}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" />
+            className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm" />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Dirección</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Dirección</label>
           <input name="address" value={form.address} onChange={handleChange}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" />
+            className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm" />
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Latitud</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Latitud</label>
             <input name="latitude" type="number" step="any" value={form.latitude} onChange={handleChange}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" />
+              className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Longitud</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Longitud</label>
             <input name="longitude" type="number" step="any" value={form.longitude} onChange={handleChange}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" />
+              className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm" />
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Área (m²)</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Área (m²)</label>
             <input name="area_sqm" type="number" value={form.area_sqm} onChange={handleChange}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" />
+              className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Tipo</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tipo</label>
             <select name="type" value={form.type} onChange={handleChange}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+              className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm">
               <option value="urban">Urbano</option>
               <option value="rural">Rural</option>
             </select>
@@ -117,22 +117,22 @@ export default function PropertyForm() {
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Precio de Compra</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Precio de Compra</label>
             <input name="purchase_price" type="number" value={form.purchase_price} onChange={handleChange}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" />
+              className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Fecha de Compra</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Fecha de Compra</label>
             <input name="purchase_date" type="date" value={form.purchase_date} onChange={handleChange}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" />
+              className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm" />
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Estado General</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Estado General</label>
             <select name="general_status" value={form.general_status} onChange={handleChange}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+              className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm">
               <option value="active">Activo</option>
               <option value="for_sale">En Venta</option>
               <option value="rented">Alquilado</option>
@@ -141,9 +141,9 @@ export default function PropertyForm() {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Estado Legal</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Estado Legal</label>
             <select name="legal_status" value={form.legal_status} onChange={handleChange}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+              className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm">
               <option value="pending">Pendiente</option>
               <option value="ok">OK</option>
               <option value="in_process">En Proceso</option>
@@ -153,7 +153,7 @@ export default function PropertyForm() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Foto del Terreno</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Foto del Terreno</label>
           <div className="flex items-center gap-3">
             <input type="file" accept="image/*" onChange={(e) => {
               const file = e.target.files[0];
@@ -161,29 +161,29 @@ export default function PropertyForm() {
               const reader = new FileReader();
               reader.onload = (ev) => setForm({ ...form, photo: ev.target.result });
               reader.readAsDataURL(file);
-            }} className="text-sm text-gray-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border file:border-gray-300 file:text-sm file:bg-gray-50 hover:file:bg-gray-100" />
-            {form.photo && <button type="button" onClick={() => setForm({ ...form, photo: "" })} className="text-xs text-red-600 hover:text-red-800">Eliminar</button>}
+            }} className="text-sm text-gray-600 dark:text-gray-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border file:border-gray-300 dark:file:border-gray-600 dark:border-gray-600 file:text-sm dark:file:text-gray-300 file:bg-gray-50 dark:file:bg-gray-700 dark:bg-gray-800 hover:file:bg-gray-100 dark:hover:file:bg-gray-600" />
+            {form.photo && <button type="button" onClick={() => setForm({ ...form, photo: "" })} className="text-xs text-red-600 dark:text-red-400 hover:text-red-800">Eliminar</button>}
           </div>
           {form.photo && (
             <div className="mt-2">
-              <img src={form.photo} alt="Preview" className="h-32 w-full object-cover rounded-lg border border-gray-200" />
+              <img src={form.photo} alt="Preview" className="h-32 w-full object-cover rounded-lg border border-gray-200 dark:border-gray-700" />
             </div>
           )}
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Notas</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Notas</label>
           <textarea name="notes" value={form.notes} onChange={handleChange} rows={3}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" />
+            className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm" />
         </div>
 
         <div className="flex gap-3 pt-4">
           <button type="submit"
-            className="bg-blue-600 text-white px-6 py-2 rounded-lg text-sm hover:bg-blue-700">
+            className="bg-blue-600 dark:bg-blue-500 text-white px-6 py-2 rounded-lg text-sm hover:bg-blue-700 dark:hover:bg-blue-600">
             {isEdit ? "Guardar Cambios" : "Crear Propiedad"}
           </button>
           <button type="button" onClick={() => navigate("/properties")}
-            className="text-gray-600 px-6 py-2 rounded-lg text-sm border border-gray-300 hover:bg-gray-50">
+            className="text-gray-600 dark:text-gray-400 px-6 py-2 rounded-lg text-sm border border-gray-300 dark:border-gray-600 dark:border-gray-600 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800">
             Cancelar
           </button>
         </div>
@@ -191,3 +191,5 @@ export default function PropertyForm() {
     </div>
   );
 }
+
+

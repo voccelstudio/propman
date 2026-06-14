@@ -1,2 +1,17 @@
 @import "tailwindcss";
 @import "leaflet/dist/leaflet.css";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+.dark .leaflet-container {
+  background: #1a1a2e;
+  filter: invert(0.9) hue-rotate(180deg);
+}
+.dark .leaflet-control-zoom a {
+  background: #374151;
+  color: #e5e7eb;
+  border-color: #4b5563;
+}
+.dark .leaflet-control-attribution {
+  display: none;
+}
