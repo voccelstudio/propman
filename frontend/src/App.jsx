@@ -13,6 +13,7 @@ import MaintenanceForm from "./pages/MaintenanceForm";
 import LegalForm from "./pages/LegalForm";
 import ExpenseForm from "./pages/ExpenseForm";
 import SaleForm from "./pages/SaleForm";
+import SaleDetail from "./pages/SaleDetail";
 import RentalForm from "./pages/RentalForm";
 import RentalDetail from "./pages/RentalDetail";
 
