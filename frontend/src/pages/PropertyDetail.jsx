@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-import { properties as api, loans as loansApi, maintenance as maintApi, legal as legalApi, expenses as expApi, sales as salesApi } from "../api";
+import { properties as api, loans as loansApi, maintenance as maintApi, legal as legalApi, expenses as expApi, sales as salesApi, rentals as rentalsApi } from "../api";
 
 function loadValuations(propertyId) {
   try {
@@ -40,7 +40,7 @@ const STATUS_MAP = { active: "Activo", for_sale: "En Venta", rented: "Alquilado"
 const LEGAL_MAP = { ok: "OK", in_process: "En Proceso", pending: "Pendiente", observed: "Observado" };
 const LOAN_STATUS = { active: "Activo", paid: "Saldado", refinanced: "Refinanciado", defaulted: "En Mora" };
 
-const TABS = ["Detalle", "Préstamos", "Mantenimiento", "Documentos", "Gastos", "Ventas"];
+const TABS = ["Detalle", "Préstamos", "Mantenimiento", "Documentos", "Gastos", "Ventas", "Alquileres"];
 
 export default function PropertyDetail() {
   const { id } = useParams();
@@ -50,6 +50,7 @@ export default function PropertyDetail() {
   const [docs, setDocs] = useState([]);
   const [expensesList, setExpenses] = useState([]);
   const [salesList, setSales] = useState([]);
+  const [rentalsList, setRentals] = useState([]);
   const [tab, setTab] = useState(0);
   const [loading, setLoading] = useState(true);
   const [valuations, setValuations] = useState([]);
@@ -69,8 +70,9 @@ export default function PropertyDetail() {
       legalApi.list({ property_id: id }),
       expApi.list({ property_id: id }),
       salesApi.list({ property_id: id }),
-    ]).then(([p, l, t, d, e, s]) => {
-      setProperty(p); setLoans(l); setTasks(t); setDocs(d); setExpenses(e); setSales(s);
+      rentalsApi.list({ property_id: id }),
+    ]).then(([p, l, t, d, e, s, r]) => {
+      setProperty(p); setLoans(l); setTasks(t); setDocs(d); setExpenses(e); setSales(s); setRentals(r);
     }).finally(() => setLoading(false));
   }, [id]);
 
@@ -393,9 +395,40 @@ export default function PropertyDetail() {
                       {e.due_date && <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Vence: {e.due_date}</p>}
                     </div>
                   ))}
+            </div>
+          )}
+          {tab === 6 && (
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold">Alquileres</h2>
+                <Link to={`/properties/${id}/rentals/new`} className="bg-blue-600 dark:bg-blue-500 text-white px-4 py-1.5 rounded-lg text-sm hover:bg-blue-700 dark:hover:bg-blue-600">+ Nuevo Alquiler</Link>
+              </div>
+              {rentalsList.length === 0 ? <p className="text-sm text-gray-500 dark:text-gray-400 py-4 text-center">Sin alquileres registrados</p> : (
+                <div className="space-y-3">
+                  {rentalsList.map(r => (
+                    <div key={r.id} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <p className="font-medium text-gray-900 dark:text-gray-100">{r.tenant_name}</p>
+                          <p className="text-sm text-gray-500 dark:text-gray-400">${Number(r.monthly_rent).toLocaleString()}/mes</p>
+                        </div>
+                        <div className="text-right">
+                          <span className={`text-xs px-2 py-0.5 rounded-full ${r.status === "active" ? "bg-green-100 dark:bg-green-900/30 dark:text-green-400 text-green-700" : "bg-red-100 dark:bg-red-900/30 dark:text-red-400 text-red-700"}`}>{r.status === "active" ? "Activo" : "Finalizado"}</span>
+                        </div>
+                      </div>
+                      <div className="flex gap-3 text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        {r.start_date && <span>Inicio: {r.start_date}</span>}
+                        {r.end_date && <span>Fin: {r.end_date}</span>}
+                        {r.deposit > 0 && <span>Depósito: ${Number(r.deposit).toLocaleString()}</span>}
+                      </div>
+                      <Link to={`/rentals/${r.id}`} className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 mt-2 inline-block">Ver pagos</Link>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
+          )}
+        </div>
           )}
 
           {tab === 5 && (

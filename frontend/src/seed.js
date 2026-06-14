@@ -12,6 +12,8 @@ const data = {
   sale_events: [],
   valuations: [],
   notes: [],
+  rentals: [],
+  rental_payments: [],
 };
 
 function id() { return data.idCounter++; }
@@ -81,4 +83,24 @@ export function seed() {
     { id: id(), property_id: p2.id, text: "Contactar al agrimensor para actualizar el plano.", created_at: "2026-06-11 11:00:00" },
   ];
   data.notes = notes;
+
+  const r1 = { id: id(), property_id: p1.id, tenant_name: "Carlos Gómez", tenant_contact: "carlos@email.com / 351-5556789", monthly_rent: 15000, deposit: 30000, start_date: "2026-01-01", end_date: "2026-12-31", status: "active", notes: "Inquilino de la casa en Terreno Norte. Pago puntual.", created_at: now(), updated_at: now() };
+  const r2 = { id: id(), property_id: p1.id, tenant_name: "María López", tenant_contact: "maria@email.com / 351-5559876", monthly_rent: 5000, deposit: 10000, start_date: "2025-06-01", end_date: "2026-05-31", status: "expired", notes: "Alquiler del galpón trasero. Contrato finalizado.", created_at: now(), updated_at: now() };
+  data.rentals.push(r1, r2);
+
+  data.rental_payments.push(
+    { id: id(), rental_id: r1.id, amount: 15000, due_date: "2026-01-05", paid_date: "2026-01-03", status: "paid", notes: "", created_at: now() },
+    { id: id(), rental_id: r1.id, amount: 15000, due_date: "2026-02-05", paid_date: "2026-02-04", status: "paid", notes: "", created_at: now() },
+    { id: id(), rental_id: r1.id, amount: 15000, due_date: "2026-03-05", paid_date: "2026-03-05", status: "paid", notes: "", created_at: now() },
+    { id: id(), rental_id: r1.id, amount: 15000, due_date: "2026-04-05", paid_date: "2026-04-10", status: "late", notes: "Pago con demora", created_at: now() },
+    { id: id(), rental_id: r1.id, amount: 15000, due_date: "2026-05-05", paid_date: "2026-05-02", status: "paid", notes: "", created_at: now() },
+    { id: id(), rental_id: r1.id, amount: 15000, due_date: "2026-06-05", paid_date: null, status: "pending", notes: "", created_at: now() },
+    { id: id(), rental_id: r2.id, amount: 5000, due_date: "2025-06-05", paid_date: "2025-06-04", status: "paid", notes: "", created_at: now() },
+    { id: id(), rental_id: r2.id, amount: 5000, due_date: "2025-07-05", paid_date: "2025-07-03", status: "paid", notes: "", created_at: now() },
+    { id: id(), rental_id: r2.id, amount: 5000, due_date: "2025-08-05", paid_date: "2025-08-05", status: "paid", notes: "", created_at: now() },
+    { id: id(), rental_id: r2.id, amount: 5000, due_date: "2025-09-05", paid_date: "2025-09-06", status: "late", notes: "", created_at: now() },
+    { id: id(), rental_id: r2.id, amount: 5000, due_date: "2025-10-05", paid_date: "2025-10-02", status: "paid", notes: "", created_at: now() },
+    { id: id(), rental_id: r2.id, amount: 5000, due_date: "2025-11-05", paid_date: "2025-11-04", status: "paid", notes: "", created_at: now() },
+    { id: id(), rental_id: r2.id, amount: 5000, due_date: "2025-12-05", paid_date: "2025-12-03", status: "paid", notes: "", created_at: now() },
+  );
 }

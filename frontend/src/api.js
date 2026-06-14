@@ -63,6 +63,8 @@ export const loans = makeApi("loans");
 export const maintenance = makeApi("maintenance", "maintenance_tasks");
 export const legal = makeApi("legal", "legal_documents");
 export const expenses = makeApi("expenses");
+export const rentals = makeApi("rentals");
+export const rentalPayments = makeApi("rental_payments", "rental_payments");
 export const sales = {
   ...makeApi("sales"),
   addEvent: async (data) => {

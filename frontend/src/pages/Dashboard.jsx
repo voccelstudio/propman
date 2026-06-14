@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { properties as api, loans as loansApi, maintenance as maintApi, legal as legalApi, expenses as expApi, sales as salesApi } from "../api";
+import { properties as api, loans as loansApi, maintenance as maintApi, legal as legalApi, expenses as expApi, sales as salesApi, rentals as rentalsApi } from "../api";
 
 export default function Dashboard() {
   const [data, setData] = useState(null);
@@ -8,8 +8,8 @@ export default function Dashboard() {
   useEffect(() => {
     Promise.all([
       api.list(), loansApi.list(), maintApi.list(),
-      legalApi.list(), expApi.list(), salesApi.list(),
-    ]).then(([props, loans, maint, docs, exp, sales]) => {
+      legalApi.list(), expApi.list(), salesApi.list(), rentalsApi.list(),
+    ]).then(([props, loans, maint, docs, exp, sales, rentals]) => {
       const now = new Date().toISOString().split("T")[0];
       const totalValue = props.reduce((s, p) => s + Number(p.purchase_price || 0), 0);
       const activeDebt = loans.filter(l => l.status === "active").reduce((s, l) => s + Number(l.remaining_balance || 0), 0);
@@ -17,6 +17,9 @@ export default function Dashboard() {
       const overdueMaint = maint.filter(t => t.status !== "done" && t.next_due_date && t.next_due_date <= now);
       const expiringDocs = docs.filter(d => d.status === "expiring_soon" || d.status === "expired");
       const activeSales = sales.filter(s => s.status !== "closed" && s.status !== "titled");
+
+      const activeRentals = rentals.filter(r => r.status === "active");
+      const rentalIncome = activeRentals.reduce((s, r) => s + Number(r.monthly_rent), 0);
 
       const upcomingExpenses = [...exp]
         .filter(e => !e.paid && e.due_date)
@@ -29,8 +32,8 @@ export default function Dashboard() {
         .slice(0, 5);
 
       setData({
-        props, loans, maint, docs, exp, sales,
-        totalValue, activeDebt, pendingExp, overdueMaint, expiringDocs, activeSales,
+        props, loans, maint, docs, exp, sales, rentals,
+        totalValue, activeDebt, pendingExp, overdueMaint, expiringDocs, activeSales, activeRentals, rentalIncome,
         upcomingExpenses, upcomingMaint, stats: {
           totalProperties: props.length,
           activeProperties: props.filter(p => p.general_status === "active").length,
@@ -42,6 +45,9 @@ export default function Dashboard() {
           totalDocs: docs.length,
           totalExpenses: exp.length,
           totalSales: sales.length,
+          totalRentals: rentals.length,
+          activeRentals: activeRentals.length,
+          rentalIncome,
         }
       });
     });
@@ -76,8 +82,9 @@ export default function Dashboard() {
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         <KPI label="Urbanas / Rurales" value={`${data.stats.urbanCount} / ${data.stats.ruralCount}`} />
-        <KPI label="Préstamos" value={data.stats.totalLoans} sub={`${data.loans.filter(l => l.status === "active").length} activos`} />
+        <KPI label="Alquileres" value={data.stats.activeRentals} sub={`${data.stats.totalRentals} totales · $${data.rentalIncome.toLocaleString()}/mes`} />
         <KPI label="Ventas Activas" value={data.activeSales.length} />
+        <KPI label="Préstamos" value={data.stats.totalLoans} sub={`${data.loans.filter(l => l.status === "active").length} activos`} />
         <KPI label="Gastos Impagos" value={data.pendingExp.length} sub={`$${data.pendingExp.reduce((s, e) => s + Number(e.amount || 0), 0).toLocaleString()}`} />
       </div>
 

@@ -13,7 +13,8 @@ import MaintenanceForm from "./pages/MaintenanceForm";
 import LegalForm from "./pages/LegalForm";
 import ExpenseForm from "./pages/ExpenseForm";
 import SaleForm from "./pages/SaleForm";
-import SaleDetail from "./pages/SaleDetail";
+import RentalForm from "./pages/RentalForm";
+import RentalDetail from "./pages/RentalDetail";
 
 function App() {
   const { dark, toggle } = useTheme();
@@ -61,6 +62,9 @@ function App() {
         <Route path="/properties/:propertyId/sales/new" element={<SaleForm />} />
         <Route path="/properties/:propertyId/sales/:id" element={<SaleDetail />} />
         <Route path="/properties/:propertyId/sales/:id/edit" element={<SaleForm />} />
+        <Route path="/properties/:propertyId/rentals/new" element={<RentalForm />} />
+        <Route path="/rentals/:id" element={<RentalDetail />} />
+        <Route path="/rentals/:id/edit" element={<RentalForm />} />
       </Routes>
 
       {showBackup && <BackupRestore onClose={() => setShowBackup(false)} />}
